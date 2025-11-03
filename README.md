@@ -85,4 +85,3 @@ This project assets created by others, as follows:
   - The shader this Feature uses also is fromt he Unity URP `OutputTextureRendererFeature` Sample. 
 - The sample scene used to demonstrate the Image Capturer is the "Garden" scene from the free Unity URP Samples Project.
 - All Unity-related assets and code remain subject to Unity’s original licensing terms.
-- 
