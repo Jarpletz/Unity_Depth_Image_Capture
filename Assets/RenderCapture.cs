@@ -17,13 +17,14 @@ public class RenderCapture : MonoBehaviour
         public int frameNum;
     }
 
+    [Tooltip("How long, in seconds, frame data will be captured.")]
     [SerializeField] float renderTimeSeconds = 10f;
     [SerializeField] GameObject doneCapturingRendersText;
     [SerializeField] GameObject doneSavingPNGsText;
 
     
     [Tooltip("How many frames to process (encode+write) per Update to spread cost.")]
-    [SerializeField] int savesPerFrame = 1;
+    [SerializeField] int savesPerFrame = 2;
 
     ConcurrentQueue<FrameData> saveQueue = new ConcurrentQueue<FrameData>();    
     bool capturing = true;

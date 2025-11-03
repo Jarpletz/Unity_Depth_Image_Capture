@@ -46525,6 +46525,10 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2760477044887562765, guid: 8e5bed6b8dcfed240a38affefd9c58f6, type: 3}
+      propertyPath: m_TaaSettings.m_FrameInfluence
+      value: 0.100000024
+      objectReference: {fileID: 0}
+    - target: {fileID: 2760477044887562765, guid: 8e5bed6b8dcfed240a38affefd9c58f6, type: 3}
       propertyPath: m_TaaSettings.contrastAdaptiveSharpening
       value: 0.2
       objectReference: {fileID: 0}
@@ -46550,31 +46554,31 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7019485897165914674, guid: 8e5bed6b8dcfed240a38affefd9c58f6, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 1.3225541
+      value: -13.534489
       objectReference: {fileID: 0}
     - target: {fileID: 7019485897165914674, guid: 8e5bed6b8dcfed240a38affefd9c58f6, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.6563486
+      value: 0.783712
       objectReference: {fileID: 0}
     - target: {fileID: 7019485897165914674, guid: 8e5bed6b8dcfed240a38affefd9c58f6, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 11.416643
+      value: 11.350197
       objectReference: {fileID: 0}
     - target: {fileID: 7019485897165914674, guid: 8e5bed6b8dcfed240a38affefd9c58f6, type: 3}
       propertyPath: m_LocalRotation.w
-      value: 0.05647636
+      value: -0.9899125
       objectReference: {fileID: 0}
     - target: {fileID: 7019485897165914674, guid: 8e5bed6b8dcfed240a38affefd9c58f6, type: 3}
       propertyPath: m_LocalRotation.x
-      value: 0.0018165645
+      value: 0.0065360316
       objectReference: {fileID: 0}
     - target: {fileID: 7019485897165914674, guid: 8e5bed6b8dcfed240a38affefd9c58f6, type: 3}
       propertyPath: m_LocalRotation.y
-      value: -0.99705935
+      value: 0.14152622
       objectReference: {fileID: 0}
     - target: {fileID: 7019485897165914674, guid: 8e5bed6b8dcfed240a38affefd9c58f6, type: 3}
       propertyPath: m_LocalRotation.z
-      value: -0.051767677
+      value: 0.0009286358
       objectReference: {fileID: 0}
     - target: {fileID: 7019485897165914677, guid: 8e5bed6b8dcfed240a38affefd9c58f6, type: 3}
       propertyPath: field of view
@@ -108634,7 +108638,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2026756902}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 82de3d10c33bb9243996571fe2c2d1ae, type: 3}
   m_Name: 
