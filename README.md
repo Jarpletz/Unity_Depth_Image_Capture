@@ -1,8 +1,15 @@
 # Unity Depth Image Capture
 
-This project captures both color and depth images from a Unity 6 URP scene for every rendered frame. This data is captured for a specified time period, in which the rendered data is stored. Afterwards, each frame rendered in this time is saved as 2 PNG images - one for color, one for depth.
+This project captures both color and depth images from a Unity 6 URP scene for every rendered frame.
+During a specified capture period, each frame’s color and depth data are stored and then saved as two separate PNG images—one for color, one for depth.
 
-The code used in this project, as well as a sample scene it has been integrated with.
+An example scene is provided, as well as previews of the two saved render images:
+<img width="1919" height="883" alt="image" src="https://github.com/user-attachments/assets/15b81ce4-4189-4707-99dc-b2f237cca27e" />
+
+
+
+
+The code used in this project, as well as a sample scene it has been integrated with, are provided in this repository.
 
 ## Purpose
 The goal is to create a consistent dataset that can be used to study how different video encoding techniques perform when sending both color and depth data of rendered scenes together. This was built specifically with the application of VR Render Offloading in mind, but it has a variety of other potential uses.
@@ -11,7 +18,7 @@ The goal is to create a consistent dataset that can be used to study how differe
 
 Here are instructions to run the project using the sample scene:
 1. Clone this repositiory
-2. Open the project in Unity. It was created in Unity 6 version 6000.2.8f1, but later versions will likely work.
+2. Open the project in Unity. (Tested in `6000.2.8f1`)
 3. Open the "GardenScene" Scene.
 4. In the Project Directory tab of the Unity editor, go to `Settings -> PC -> PC_High_Renderer -> Output Textures Feature`
     1. Set the "Texture Size" fielhd to your desired image size. Larger images will be less performant.
@@ -21,6 +28,37 @@ Here are instructions to run the project using the sample scene:
     2. Your File system navigation system will open to the directory the images are being saved to. This may take some time.
     3. After all images have been saved, "Done saving PNGs" text will appear in the application.
     4. You may close the application.
+7. The Captured images will be saved in a new `Output` folder in your project/build directory.
+    1. The captured images follow the following naming convention (using their frame number in their name):
+        * `Color_00xxx.png`
+        * `Depth_00xxx.png`
+
+## Implementation Instructions
+
+Instructions for implementing this in another Unity Project:
+- Ensure you are on Unity `6000.xx+`
+- Confugure your project for Unity Universal Render Pipeline.
+- Copy the scripts and shader in this repository's root directory into your project.
+- Locate the Universal Render Pipeline Asset used by your project
+  - Under Rendering, make sure "Opaque Texture" and "Depth Texture" are both checked.
+- Locate the Universal Render Data asset used by your project. It Should be referenced by the URP Asset in the previous step.
+  - Click "Add Render Feature"
+  - Add an "Output Textures Feature" Render feature.
+  - Set the Texture Size to your desired image resolution.
+- Go to `Edit -> Project Settings -> Graphics -> Shader Settings -> Always Includeed Shaders`
+  - Add "Shader Graphs/BlitTargetTexture" To the list.
+- Open your desired scene, go to its hierarchy tab
+- Create a new GameObject and add a `RenderCapture` Component to it.
+  - Set the "Render Time Seconds" to the amount of time you want to capture frames for
+  - **Optional**: If you would like to display text when capturing and saving is complete:
+    - Create a UI Object with text saying something like "Done Capturing Images". In the `RenderCapture` component, add a reference to this gameobject.
+    - Create a UI Object with text saying something like "Done Saving PNGs". In the `RenderCapture` component, add a reference to this gameobject.
+    - Disable both GameObjects. The `RenderCapture` script will enable them at runtime when appropriate.
+- **Optional:** if you would like to display the render textures created by the custom Render Feature in your application:
+  - Create two UI gameObjects, and add `RawImage` Components to each of them.
+  - In the same gameobject as the `RenderCapture` component, add a `PreviewRenderTextures` component.
+  - Add references to the `RawImage` components you created in the `DepthDisplay` and `ColorDisplay` fields.
+- Congratulations, the scene should now be fully configured to capture and save color and depth images of each frame! 
 
 
 ## Pipeline Overview
@@ -43,7 +81,8 @@ The Script that saves the rendered textures (`RenderCapture.cs`):
 ## Credits
 
 This project assets created by others, as follows:
-- The custom Render Feature used to obtain RenderTextures of both the Depth and Color render data was created by modifying the Unity URP OutputTextureRendererFeature Render Feature.
+- The custom Render Feature used to obtain RenderTextures of both the Depth and Color render data was created by modifying the Unity URP `OutputTextureRendererFeature` Render Feature.
+  - The shader this Feature uses also is fromt he Unity URP `OutputTextureRendererFeature` Sample. 
 - The sample scene used to demonstrate the Image Capturer is the "Garden" scene from the free Unity URP Samples Project.
 - All Unity-related assets and code remain subject to Unity’s original licensing terms.
 - 
