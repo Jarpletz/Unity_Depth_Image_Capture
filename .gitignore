@@ -9,8 +9,10 @@
 /[Bb]uild/
 /[Bb]uilds/
 /[Ll]ogs/
+/[Oo]utput/
 /[Uu]ser[Ss]ettings/
 *.log
+/.vscode/
 
 # By default unity supports Blender asset imports, *.blend1 blender files do not need to be commited to version control.
 *.blend1
