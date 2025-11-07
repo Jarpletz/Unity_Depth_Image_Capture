@@ -6,6 +6,7 @@ public class UniversalSettings : MonoBehaviour
 
     public Vector2Int resolution = new Vector2Int(1920, 1080);
     public int recordingDuration = 10;
+    public float timeScale = 1.0f;
 
     private void Awake()
     {

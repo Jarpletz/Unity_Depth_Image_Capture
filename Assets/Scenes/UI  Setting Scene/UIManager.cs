@@ -9,6 +9,7 @@ public class UniversalSettingsUIManager : MonoBehaviour
     public TMP_InputField widthInput;
     public TMP_InputField heightInput;
     public TMP_InputField recordTimeInput;
+    public TMP_InputField timeScaleInput;
 
     public Button startButton;
 
@@ -25,12 +26,16 @@ public class UniversalSettingsUIManager : MonoBehaviour
         widthInput.text = UniversalSettings.Instance.resolution.x.ToString();
         heightInput.text = UniversalSettings.Instance.resolution.y.ToString();
         recordTimeInput.text = UniversalSettings.Instance.recordingDuration.ToString();
+        timeScaleInput.text = UniversalSettings.Instance.timeScale.ToString();
+
 
 
         // Subscribe to value changes
         widthInput.onEndEdit.AddListener(OnWidthChanged);
         heightInput.onEndEdit.AddListener(OnHeightChanged);
-        recordTimeInput.onEndEdit.AddListener(OnRuntimeChanged);
+        recordTimeInput.onEndEdit.AddListener(OnRecordTimeChanged);
+        timeScaleInput.onEndEdit.AddListener(OnTimescaleChanged);
+
         startButton.onClick.AddListener(OnStart);
     }
 
@@ -52,13 +57,22 @@ public class UniversalSettingsUIManager : MonoBehaviour
         }
     }
 
-    private void OnRuntimeChanged(string newValue)
+    private void OnRecordTimeChanged(string newValue)
     {
         if (int.TryParse(newValue, out int recordTime))
         {
             UniversalSettings.Instance.recordingDuration = recordTime;
         }
     }
+
+    private void OnTimescaleChanged(string newValue)
+    {
+        if (float.TryParse(newValue, out float timeScale))
+        {
+            UniversalSettings.Instance.timeScale = timeScale;
+        }
+    }
+
 
     private void OnStart()
     {
