@@ -2178,6 +2178,7 @@ MonoBehaviour:
   widthInput: {fileID: 1602016860}
   heightInput: {fileID: 2094373690}
   recordTimeInput: {fileID: 1245506197}
+  timeScaleInput: {fileID: 1417605675}
   startButton: {fileID: 1704143186}
 --- !u!1 &1417605673
 GameObject:
@@ -3689,6 +3690,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::UniversalSettings
   resolution: {x: 1920, y: 1080}
   recordingDuration: 10
+  timeScale: 1
 --- !u!4 &2084716168
 Transform:
   m_ObjectHideFlags: 0
