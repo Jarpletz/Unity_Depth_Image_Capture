@@ -87,7 +87,7 @@ public class OutputTexturesFeature : ScriptableRendererFeature
     RenderPassEvent m_PassEvent = RenderPassEvent.AfterRenderingPostProcessing;
 
     [SerializeField]
-    Vector2Int textureSize = new Vector2Int(1080, 720);
+    static Vector2Int textureSize = new Vector2Int(1080, 720);
 
     OutputTexturePass m_ScriptablePass;
     static RTHandle depthHandle;
@@ -105,25 +105,7 @@ public class OutputTexturesFeature : ScriptableRendererFeature
         // Configures where the render pass should be injected.
         m_ScriptablePass.renderPassEvent = m_PassEvent;
 
-        if (depthHandle == null)
-        {
-            depthHandle = RTHandles.Alloc(
-                width: textureSize.x,
-                height: textureSize.y,
-                colorFormat: UnityEngine.Experimental.Rendering.GraphicsFormat.R8G8B8A8_UNorm,
-                name: "_OutputDepthRT"
-            );
-        }
-
-        if (colorHandle == null)
-        {
-            colorHandle = RTHandles.Alloc(
-                width: textureSize.x,
-                height: textureSize.y,
-                colorFormat: UnityEngine.Experimental.Rendering.GraphicsFormat.R8G8B8A8_UNorm,
-                name: "_OutputColorRT"
-            );
-        }
+        generateRenderTextureHandles();
     }
 
     // Here you can inject one or multiple render passes in the renderer.
@@ -135,7 +117,6 @@ public class OutputTexturesFeature : ScriptableRendererFeature
         renderer.EnqueuePass(m_ScriptablePass);
     }
 
-
     protected override void Dispose(bool disposing)
     {
         base.Dispose(disposing);
@@ -146,6 +127,44 @@ public class OutputTexturesFeature : ScriptableRendererFeature
         depthHandle = null;
         colorHandle = null;
     }
+
+    public static void generateRenderTextureHandles()
+    {
+        if (UniversalSettings.Instance)
+        {
+            textureSize.x = UniversalSettings.Instance.resolution.x;
+            textureSize.y = UniversalSettings.Instance.resolution.y;
+        }
+
+        if (depthHandle != null)
+        {
+            RTHandles.Release(depthHandle);
+        }
+        if (colorHandle != null)
+        {
+            RTHandles.Release(colorHandle);
+        }
+
+        depthHandle = null;
+        colorHandle = null;
+
+
+        depthHandle = RTHandles.Alloc(
+            width: textureSize.x,
+            height: textureSize.y,
+            colorFormat: UnityEngine.Experimental.Rendering.GraphicsFormat.R8G8B8A8_UNorm,
+            name: "_OutputDepthRT"
+        );
+
+        colorHandle = RTHandles.Alloc(
+            width: textureSize.x,
+            height: textureSize.y,
+            colorFormat: UnityEngine.Experimental.Rendering.GraphicsFormat.R8G8B8A8_UNorm,
+            name: "_OutputColorRT"
+        );
+
+    }
+
 }
 
 

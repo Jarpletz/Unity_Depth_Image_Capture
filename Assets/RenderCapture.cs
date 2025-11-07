@@ -22,11 +22,11 @@ public class RenderCapture : MonoBehaviour
     [SerializeField] GameObject doneCapturingRendersText;
     [SerializeField] GameObject doneSavingPNGsText;
 
-    
+
     [Tooltip("How many frames to process (encode+write) per Update to spread cost.")]
     [SerializeField] int savesPerFrame = 2;
 
-    ConcurrentQueue<FrameData> saveQueue = new ConcurrentQueue<FrameData>();    
+    ConcurrentQueue<FrameData> saveQueue = new ConcurrentQueue<FrameData>();
     bool capturing = true;
     int frameCount = 0;
     bool hasOpenedDir = false;
@@ -34,6 +34,8 @@ public class RenderCapture : MonoBehaviour
 
     void Start()
     {
+        Time.timeScale = UniversalSettings.Instance.timeScale;
+
         Camera.main.depthTextureMode = DepthTextureMode.Depth;
         depthTexture = OutputTexturesFeature.DepthTexture;
     }
@@ -53,7 +55,7 @@ public class RenderCapture : MonoBehaviour
         }
         else
         {
-            if(saveQueue.Count() < 1)
+            if (saveQueue.Count() < 1)
             {
                 if (doneSavingPNGsText) doneSavingPNGsText.SetActive(true);
 
@@ -65,7 +67,7 @@ public class RenderCapture : MonoBehaviour
                 if (!saveQueue.TryDequeue(out var fd)) break;
                 StartCoroutine(SaveFrameCoroutine(fd));
             }
-            
+
         }
 
     }
@@ -84,7 +86,7 @@ public class RenderCapture : MonoBehaviour
     {
         if (!capturing) return;
 
-        if(!OutputTexturesFeature.ColorTexture || !OutputTexturesFeature.DepthTexture)
+        if (!OutputTexturesFeature.ColorTexture || !OutputTexturesFeature.DepthTexture)
         {
             Debug.LogWarning("Textures not found. Be sure to add the OutputTexturesFeature to your Render Features list in your URP asset.");
             return;
@@ -104,7 +106,7 @@ public class RenderCapture : MonoBehaviour
             var colorData = colorRequest.GetData<byte>();
             byte[] colorCopy = new byte[colorData.Length];
             colorData.CopyTo(colorCopy);
-          
+
             AsyncGPUReadback.Request(OutputTexturesFeature.DepthTexture, 0, TextureFormat.RGB24, request =>
             {
                 if (request.hasError)
@@ -117,7 +119,7 @@ public class RenderCapture : MonoBehaviour
                 var depthData = request.GetData<byte>();
                 byte[] depthCopy = new byte[depthData.Length];
                 depthData.CopyTo(depthCopy);
-            
+
                 var fd = new FrameData
                 {
                     colorRaw = colorCopy,
@@ -132,7 +134,7 @@ public class RenderCapture : MonoBehaviour
         });
     }
 
-   
+
     IEnumerator SaveFrameCoroutine(FrameData fd)
     {
         // This runs on the main thread (coroutine), so Unity APIs are safe here.
@@ -148,11 +150,11 @@ public class RenderCapture : MonoBehaviour
             //  ---------- COLOR ------------------
             Texture2D colorTexture = new Texture2D(fd.width, fd.height, TextureFormat.RGB24, false);
             colorTexture.LoadRawTextureData(fd.colorRaw);
-            colorTexture.Apply(false, false); 
+            colorTexture.Apply(false, false);
             byte[] colorPng = ImageConversion.EncodeToPNG(colorTexture);
             Destroy(colorTexture);
 
-            
+
             string colorPath = Path.Combine(dir, $"Color_{fd.frameNum:D05}.png");
             File.WriteAllBytes(colorPath, colorPng);
             Debug.Log($"Saved {colorPath}");
@@ -160,11 +162,11 @@ public class RenderCapture : MonoBehaviour
             //  ---------- DEPTH ------------------
             Texture2D depthTexture = new Texture2D(fd.width, fd.height, TextureFormat.RGB24, false);
             depthTexture.LoadRawTextureData(fd.depthRaw);
-            depthTexture.Apply(false, false); 
+            depthTexture.Apply(false, false);
             byte[] depthPng = ImageConversion.EncodeToPNG(depthTexture);
             Destroy(depthTexture);
 
-            
+
             string depthPath = Path.Combine(dir, $"Depth_{fd.frameNum:D05}.png");
             File.WriteAllBytes(depthPath, depthPng);
             Debug.Log($"Saved {depthPath}");
