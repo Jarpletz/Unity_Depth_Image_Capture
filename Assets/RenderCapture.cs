@@ -8,6 +8,14 @@ using System.Collections;
 
 public class RenderCapture : MonoBehaviour
 {
+
+    struct CameraData
+    {
+        public Transform transform;
+        public Quaternion rotation;
+        public int frameNumber;
+        public float playbackTime;
+    }
     struct FrameData
     {
         public byte[] colorRaw;
@@ -15,6 +23,7 @@ public class RenderCapture : MonoBehaviour
         public int width;
         public int height;
         public int frameNum;
+        public CameraData cameraData;
     }
 
     [Tooltip("How long, in seconds, frame data will be captured.")]
