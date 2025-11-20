@@ -5,13 +5,15 @@ using System.IO;
 using System.Linq;
 using System.Collections.Concurrent;
 using System.Collections;
+using System.Text;
+using NUnit.Compatibility;
 
 public class RenderCapture : MonoBehaviour
 {
 
     struct CameraData
     {
-        public Transform transform;
+        public Vector3 position;
         public Quaternion rotation;
         public int frameNumber;
         public float playbackTime;
@@ -23,7 +25,6 @@ public class RenderCapture : MonoBehaviour
         public int width;
         public int height;
         public int frameNum;
-        public CameraData cameraData;
     }
 
     [Tooltip("How long, in seconds, frame data will be captured.")]
@@ -36,26 +37,34 @@ public class RenderCapture : MonoBehaviour
     [SerializeField] int savesPerFrame = 2;
 
     ConcurrentQueue<FrameData> saveQueue = new ConcurrentQueue<FrameData>();
+    List<CameraData> cameraData = new List<CameraData>();
     bool capturing = true;
-    int frameCount = 0;
     bool hasOpenedDir = false;
-    RenderTexture depthTexture;
+    bool hasSavedCamData = false;
 
-    void Start()
+
+    int frameCount = 0;
+    float timer = 0f;
+
+    GameObject cameraObj;
+
+    void Awake()
     {
         Time.timeScale = UniversalSettings.Instance.timeScale;
 
         Camera.main.depthTextureMode = DepthTextureMode.Depth;
-        depthTexture = OutputTexturesFeature.DepthTexture;
+
+        cameraObj = Camera.main.gameObject;
     }
+
 
     void Update()
     {
         if (capturing)
         {
 
-            renderTimeSeconds -= Time.deltaTime;
-            if (renderTimeSeconds <= 0)
+            timer += Time.deltaTime;
+            if (timer >= renderTimeSeconds)
             {
                 if (doneCapturingRendersText) doneCapturingRendersText.SetActive(true);
                 capturing = false;
@@ -67,7 +76,12 @@ public class RenderCapture : MonoBehaviour
             if (saveQueue.Count() < 1)
             {
                 if (doneSavingPNGsText) doneSavingPNGsText.SetActive(true);
+            }
 
+            if (!hasSavedCamData)
+            {
+                SaveCameraDataToCSV();
+                hasSavedCamData = true;
             }
 
             // Process up to savesPerFrame queued frames on main thread.
@@ -101,6 +115,16 @@ public class RenderCapture : MonoBehaviour
             return;
         }
 
+        // get the camera position/orientation at time of capture
+        var newCamData = new CameraData
+        {
+            position = cameraObj.transform.position,
+            rotation = cameraObj.transform.rotation,
+            frameNumber = frameCount,
+            playbackTime = timer
+        };
+        cameraData.Add(newCamData);
+
 
         // Issue async GPU readback, non-blocking
         AsyncGPUReadback.Request(OutputTexturesFeature.ColorTexture, 0, TextureFormat.RGB24, colorRequest =>
@@ -129,13 +153,14 @@ public class RenderCapture : MonoBehaviour
                 byte[] depthCopy = new byte[depthData.Length];
                 depthData.CopyTo(depthCopy);
 
+
                 var fd = new FrameData
                 {
                     colorRaw = colorCopy,
                     depthRaw = depthCopy,
                     width = OutputTexturesFeature.DepthTexture.width,
                     height = OutputTexturesFeature.DepthTexture.height,
-                    frameNum = frameCount++
+                    frameNum = frameCount++,
                 };
 
                 saveQueue.Enqueue(fd);
@@ -194,5 +219,35 @@ public class RenderCapture : MonoBehaviour
 
         // allow other coroutines/frames to run
         yield return null;
+    }
+
+    void SaveCameraDataToCSV()
+    {
+        StringBuilder sb = new StringBuilder();
+
+        string dir = Path.Combine(Application.dataPath, "../Output");
+        string csvPath = Path.Combine(dir, "camera_data.csv");
+
+        // Header
+        sb.AppendLine("frameNumber,playbackTime,posX,posY,posZ,rotX,rotY,rotZ,rotW");
+
+        foreach (var d in cameraData)
+        {
+            sb.Append(d.frameNumber).Append(",");
+            sb.Append(d.playbackTime).Append(",");
+
+            sb.Append(d.position.x).Append(",");
+            sb.Append(d.position.y).Append(",");
+            sb.Append(d.position.z).Append(",");
+
+            sb.Append(d.rotation.x).Append(",");
+            sb.Append(d.rotation.y).Append(",");
+            sb.Append(d.rotation.z).Append(",");
+            sb.Append(d.rotation.w);
+
+            sb.AppendLine();
+        }
+
+        File.WriteAllText(csvPath, sb.ToString());
     }
 }
